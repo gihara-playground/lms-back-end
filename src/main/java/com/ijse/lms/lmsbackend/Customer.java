@@ -6,7 +6,7 @@ public class Customer {
 
     private String name;
     private String nic;
-    private String email;-
+    private String email;
 
     public Customer(String nic, String name, String email) {
         this.nic = nic;
