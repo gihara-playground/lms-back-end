@@ -7,9 +7,11 @@ import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 import jakarta.json.bind.JsonbException;
 
+import javax.annotation.Resource;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import javax.sql.DataSource;
 import java.io.BufferedReader;
@@ -18,18 +20,20 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@WebServlet(name = "StudentServlet", urlPatterns = {"/students", "/students/"}, loadOnStartup = 1)
 public class StudentServlet extends HttpServlet {
+    @Resource(name = "java:comp/env/jdbc/pool4lms")
     private volatile DataSource pool;
 
-    @Override
-    public void init() throws ServletException {
-        try {
-            InitialContext ctx = new InitialContext();
-            pool = (DataSource) ctx.lookup("java:comp/env/jdbc/pool4lms");
-        } catch (NamingException e) {
-            e.printStackTrace();
-        }
-    }
+//    @Override
+//    public void init() throws ServletException {
+//        try {
+//            InitialContext ctx = new InitialContext();
+//            pool = (DataSource) ctx.lookup("java:comp/env/jdbc/pool4lms");
+//        } catch (NamingException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -104,9 +108,9 @@ public class StudentServlet extends HttpServlet {
                 rst.next();
                 student.setId(rst.getString(1));
 
-                resp.setStatus(HttpServletResponse.SC_CREATED);
-                resp.setContentType("application/json");
-                jsonb.toJson(student, resp.getWriter());            } catch (SQLException e) {
+                response.setStatus(HttpServletResponse.SC_CREATED);
+                response.setContentType("application/json");
+                jsonb.toJson(student, response.getWriter());            } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
         } catch (JsonbException e) {
